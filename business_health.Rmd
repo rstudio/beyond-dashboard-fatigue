@@ -1,0 +1,155 @@
+---
+title: "Business Health"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lubridate)
+library(gt)
+library(blastula)
+library(glue)
+
+source("health_kpis.R")
+source("health_thresholds.R")
+```
+
+## Summary of Business Health
+
+This is a raw table of the recent KPI data (last 10 days).
+
+```{r health_kpis, echo=FALSE}
+health_kpis_recent <- get_health_kpis(n = 10)
+health_kpis_recent
+```
+
+
+```{r exceedances, include=FALSE}
+# Get the KPIs for the most recent day in a list
+one_day_kpis <-
+  health_kpis_recent %>%
+  select(dau, dac, dac_dau, new_users, churn_users, daily_revenue) %>%
+  head(1) %>% as.list()
+
+# Compare these KPIs against the thresholds and
+# determine if there are any exceedances (TRUE/FALSE)
+exceedances <-
+  list(
+    dau = one_day_kpis$dau < health_thresholds$dau,
+    dac = one_day_kpis$dac < health_thresholds$dac,
+    dac_dau = one_day_kpis$dac_dau < health_thresholds$dac_dau,
+    new_users = one_day_kpis$new_users < health_thresholds$new_users,
+    churn_users = one_day_kpis$churn_users > health_thresholds$churn_users,
+    daily_revenue = one_day_kpis$daily_revenue < health_thresholds$daily_revenue
+  )
+
+# Get the total number of exceedances
+total_exceed <- exceedances %>% unlist() %>% sum()
+
+# Get the KPI names for the exceedances
+names_exceed <- unlist(exceedances)[unlist(exceedances)] %>% names()
+```
+
+## Business Health as a **gt** Table
+
+```{r business_health_gt, echo=FALSE}
+gt_health <-
+  health_kpis_recent %>%
+  add_threshold_columns(health_thresholds) %>%
+  gt(rowname_col = "date", groupname_col = "week") %>%
+  tab_header(
+    title = "Daily Health Check for Product KPIs",
+    subtitle = "Last 10 days of KPIs shown for Product (weekend in gray)"
+  ) %>%
+  cols_label(
+    date = "Date", dau = "DAU", dac = "DAC", dac_dau = "DAC/DAU",
+    new_users = "New", churn_users = "Churned",
+    daily_revenue = "Daily Revenue"
+  ) %>%
+  highlight_exceedances(health_thresholds) %>%
+  highlight_weekends() %>%
+  cols_hide(columns = vars(wday)) %>%
+  cols_align(align = "right", everything()) %>%
+  fmt_number(columns = vars(dau, dac, new_users), suffixing = TRUE, decimals = 1) %>%
+  fmt_currency(columns = vars(daily_revenue), currency = "USD", decimals = 0) %>%
+  tab_options(table.width = px(740), data_row.padding = px(2.5)) %>%
+  cols_width(everything() ~ px(740 / 7)) %>%
+  opt_all_caps()
+
+gt_health
+```
+
+## Daily Users as a **ggplot** Table
+
+```{r ggplot_users, fig.align="center", echo=FALSE}
+health_kpis_recent %>%
+  select(date, dau, dac, new_users, churn_users) %>%
+  pivot_longer(
+    cols = dau:churn_users,
+    names_to = "type",
+    values_to = "n"
+  ) %>%
+  mutate(type = type %>% fct_relevel(c("dau", "dac", "new_users", "churn_users"))) %>%
+  ggplot() +
+  geom_line(aes(x = date, y = n, color = type)) +
+  scale_y_log10(
+    labels = scales::comma_format(),
+    breaks = c(10, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7)) +
+  labs(
+    title = "Daily Numbers for Users of our Product",
+    subtitle = "Split between DAU, DAC, new users, and churning users\n",
+    x = "", y = "Users",
+    color = "KPI"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position =  "plot",
+    legend.position = "top"
+  )
+```
+
+## Daily Revenue as a **ggplot** Table
+
+```{r ggplot_revenue, fig.align="center", echo=FALSE}
+health_kpis_recent %>%
+  select(date, daily_revenue) %>%
+  ggplot(aes(x = date, y = daily_revenue)) +
+  geom_line(color = "forestgreen", size = 1) +
+  geom_point(size = 2, shape = 21, color = "forestgreen", fill = "white", stroke = 1) +
+  scale_y_continuous(labels = scales::dollar_format(), limits = c(0, NA)) +
+  labs(
+    title = "Daily Revenue for our Product",
+    subtitle = "Revenue amounts in USD and adjusted for refunds\n",
+    x = "", y = ""
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position =  "plot"
+  )
+```
+
+
+```{r health_kpis_recent_csv, echo=FALSE}
+health_kpis_recent %>% readr::write_csv("health_kpis_recent.csv")
+```
+
+
+```{r connect_email_setup, echo=FALSE}
+if (total_exceed > 0) {
+  render_connect_email(input = "business_health_email.Rmd") %>%
+    attach_connect_email(
+      subject = glue(
+        "Several ({total_exceed}) KPIs broke health thresholds: {paste(names_exceed, collapse = ', ')}"
+      ),
+      attachments = "health_kpis_recent.csv"
+    )
+} else {
+  suppress_scheduled_email() 
+}
+```
+
+
