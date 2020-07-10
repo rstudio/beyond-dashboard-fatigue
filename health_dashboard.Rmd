@@ -1,0 +1,85 @@
+---
+title: "Business Health"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(DT)
+
+source("health_kpis.R")
+```
+
+```{r health_kpis}
+health_kpis <- get_health_kpis()
+```
+
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+### Health KPI Table
+
+```{r}
+health_kpis %>%
+  select(-week, -wday) %>%
+  datatable()
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+### Daily Users
+
+```{r}
+health_kpis %>%
+  select(date, dau, dac, new_users, churn_users) %>%
+  pivot_longer(
+    cols = dau:churn_users,
+    names_to = "type",
+    values_to = "n"
+  ) %>%
+  mutate(type = type %>% fct_relevel(c("dau", "dac", "new_users", "churn_users"))) %>%
+  ggplot() +
+  geom_line(aes(x = date, y = n, color = type)) +
+  scale_y_log10(
+    labels = scales::comma_format(),
+    breaks = c(10, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7)) +
+  labs(
+    title = "Daily Numbers for Users of our Product",
+    subtitle = "Split between DAU, DAC, new users, and churning users\n",
+    x = "", y = "Users",
+    color = "KPI"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position =  "plot",
+    legend.position = "top"
+  )
+```
+
+### Daily Revenue
+
+```{r}
+health_kpis %>%
+  select(date, daily_revenue) %>%
+  ggplot(aes(x = date, y = daily_revenue)) +
+  geom_line(color = "forestgreen", size = 1) +
+  geom_point(size = 2, shape = 21, color = "forestgreen", fill = "white", stroke = 1) +
+  scale_y_continuous(labels = scales::dollar_format(), limits = c(0, NA)) +
+  labs(
+    title = "Daily Revenue for our Product",
+    subtitle = "Revenue amounts in USD and adjusted for refunds\n",
+    x = "", y = ""
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position =  "plot"
+  )
+```
+
