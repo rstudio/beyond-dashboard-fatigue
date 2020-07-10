@@ -1,0 +1,25 @@
+---
+title: "Email Document"
+output: blastula::blastula_email
+---
+
+```{r packages, include=FALSE}
+library(tidyverse)
+```
+
+# KPI Health Issues
+
+There are issues with our Product KPIs that need attention (they are highlighted in red). 
+
+```{r business_health_gt, echo=FALSE}
+```
+
+Here are the associated plots to provide some more context.
+
+```{r ggplot_users, echo=FALSE, fig.align="center"}
+```
+
+```{r ggplot_revenue, echo=FALSE, fig.align="center"}
+```
+
+The full report is available on Connect (check the links below).
