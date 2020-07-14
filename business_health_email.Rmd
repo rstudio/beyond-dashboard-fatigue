@@ -7,14 +7,20 @@ output: blastula::blastula_email
 library(tidyverse)
 ```
 
-# KPI Health Issues
+<style type="text/css">
 
-There are issues with our Product KPIs that need attention (they are highlighted in red). 
+body {font-size: 28px;}
+
+</style>
+
+## Business Health Issues
+
+There are issues with our Product KPIs that need attention (`r paste0("**", names_exceed, "**", collapse = ", ")`).
 
 ```{r business_health_gt, echo=FALSE}
 ```
 
-Here are the associated plots to provide some more context.
+Here are two of the associated plots to provide some more context.
 
 ```{r ggplot_users, echo=FALSE, fig.align="center"}
 ```
@@ -22,4 +28,4 @@ Here are the associated plots to provide some more context.
 ```{r ggplot_revenue, echo=FALSE, fig.align="center"}
 ```
 
-The full report is available on Connect (check the links below).
+The full report is available on Connect (check the links below). The raw data is attached as a CSV file.
