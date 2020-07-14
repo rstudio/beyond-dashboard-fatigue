@@ -14,17 +14,17 @@ We’ll demonstrate how this approach provides solutions for data quality monito
 
 The complete set of packages used in this webinar presentation (and required for using the R script files and R Markdown files in this repo) are:
 
-- **blastula**: 'Easily Send HTML Email Messages'
-- **gt**: 'Easily Create Presentation-Ready Display Tables'
-- **dplyr**: 'A Grammar of Data Manipulation'
-- **readr**: 'Read Rectangular Text Data'
-- **lubridate**: 'Make Dealing with Dates a Little Easier'
-- **ggplot2**: 'Create Elegant Data Visualisations Using the Grammar of Graphics'
-- **scales**: 'Scale Functions for Visualization'
-- **tidyr**: 'Tidy Messy Data'
-- **glue**: 'Interpreted String Literals'
-- **flexdashboard**: 'R Markdown Format for Flexible Dashboards'
-- **DT**: 'A Wrapper of the JavaScript Library "DataTables"'
+- [**blastula**](https://rich-iannone.github.io/blastula/): 'Easily Send HTML Email Messages'
+- [**gt**](https://gt.rstudio.com): 'Easily Create Presentation-Ready Display Tables'
+- [**dplyr**](https://dplyr.tidyverse.org): 'A Grammar of Data Manipulation'
+- [**readr**](https://readr.tidyverse.org): 'Read Rectangular Text Data'
+- [**lubridate**](https://lubridate.tidyverse.org): 'Make Dealing with Dates a Little Easier'
+- [**ggplot2**](https://ggplot2.tidyverse.org): 'Create Elegant Data Visualisations Using the Grammar of Graphics'
+- [**scales**](https://scales.r-lib.org): 'Scale Functions for Visualization'
+- [**tidyr**](https://tidyr.tidyverse.org): 'Tidy Messy Data'
+- [**glue**](https://glue.tidyverse.org): 'Interpreted String Literals'
+- [**flexdashboard**](https://rmarkdown.rstudio.com/flexdashboard/): 'R Markdown Format for Flexible Dashboards'
+- [**DT**](https://rstudio.github.io/DT/): 'A Wrapper of the JavaScript Library "DataTables"'
 
 By installing the **tidyverse** package with `install.packages("tidyverse")`, you'll get most of these packages. Use `install.packages()` with **"blastula"**, **"gt"**, **"glue"**, **"flexdashboard"**, and **"DT"** to obtain the complete set.
 
