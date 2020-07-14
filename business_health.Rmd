@@ -16,17 +16,9 @@ source("health_kpis.R")
 source("health_thresholds.R")
 ```
 
-## Summary of Business Health
-
-This is a raw table of the recent KPI data (last 10 days).
-
-```{r health_kpis, echo=FALSE}
+```{r data, include=FALSE}
 health_kpis_recent <- get_health_kpis(n = 10)
-health_kpis_recent
-```
 
-
-```{r exceedances, include=FALSE}
 # Get the KPIs for the most recent day in a list
 one_day_kpis <-
   health_kpis_recent %>%
@@ -52,9 +44,12 @@ total_exceed <- exceedances %>% unlist() %>% sum()
 names_exceed <- unlist(exceedances)[unlist(exceedances)] %>% names()
 ```
 
-## Business Health as a **gt** Table
+## Summary of Business Health
+
+The following table shows our business health KPIs. Each row represents a daily view of the KPIs that determine the success of our product. These are DAU (*Daily Active Users*), DAC (*Daily Active Customers*), the ratio DAC/DAU, our daily New Users and Churned Users, and, our Daily Revenue. If any KPIs are problematic, their values are shaded in light red.
 
 ```{r business_health_gt, echo=FALSE}
+
 gt_health <-
   health_kpis_recent %>%
   add_threshold_columns(health_thresholds) %>%
@@ -65,8 +60,7 @@ gt_health <-
   ) %>%
   cols_label(
     date = "Date", dau = "DAU", dac = "DAC", dac_dau = "DAC/DAU",
-    new_users = "New", churn_users = "Churned",
-    daily_revenue = "Daily Revenue"
+    new_users = "New", churn_users = "Churned", daily_revenue = "Daily Revenue"
   ) %>%
   highlight_exceedances(health_thresholds) %>%
   highlight_weekends() %>%
@@ -81,10 +75,13 @@ gt_health <-
 gt_health
 ```
 
-## Daily Users as a **ggplot** Table
+## Daily Users Chart
+
+The following time-series plot gives us a picture of how our user-based KPIs have been performing over the last 30 days.
 
 ```{r ggplot_users, fig.align="center", echo=FALSE}
-health_kpis_recent %>%
+
+get_health_kpis(n = 30) %>%
   select(date, dau, dac, new_users, churn_users) %>%
   pivot_longer(
     cols = dau:churn_users,
@@ -111,10 +108,13 @@ health_kpis_recent %>%
   )
 ```
 
-## Daily Revenue as a **ggplot** Table
+## Daily Revenue Chart
+
+The following time-series plot (as before, showing the last 30 days) gives us a picture of how our daily revenue has been changing over time.
 
 ```{r ggplot_revenue, fig.align="center", echo=FALSE}
-health_kpis_recent %>%
+
+get_health_kpis(n = 30) %>%
   select(date, daily_revenue) %>%
   ggplot(aes(x = date, y = daily_revenue)) +
   geom_line(color = "forestgreen", size = 1) +
@@ -132,6 +132,12 @@ health_kpis_recent %>%
   )
 ```
 
+This is a raw table of the recent KPI data (last 10 days).
+
+```{r health_kpis, echo=FALSE}
+health_kpis_recent
+```
+
 
 ```{r health_kpis_recent_csv, echo=FALSE}
 health_kpis_recent %>% readr::write_csv("health_kpis_recent.csv")
@@ -143,7 +149,8 @@ if (total_exceed > 0) {
   render_connect_email(input = "business_health_email.Rmd") %>%
     attach_connect_email(
       subject = glue(
-        "Several ({total_exceed}) KPIs broke health thresholds: {paste(names_exceed, collapse = ', ')}"
+        "One or more KPIs ({total_exceed}) broke thresholds: \\
+        {paste(names_exceed, collapse = ', ')}"
       ),
       attachments = "health_kpis_recent.csv"
     )
@@ -151,5 +158,3 @@ if (total_exceed > 0) {
   suppress_scheduled_email() 
 }
 ```
-
-
