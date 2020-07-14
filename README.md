@@ -1,4 +1,6 @@
-## Let's Get *Beyond Dashboard Fatigue*
+## Beyond Dashboard Fatigue
+
+This repository contains supporting code for the July 14, 2020 RStudio webinar. Once available, the webinar recording can be found on https://resources.rstudio.com.
 
 Dashboards are *great* but sometimes people need the right information, at the right place, at the right time. 
 
@@ -28,12 +30,23 @@ By installing the **tidyverse** package with `install.packages("tidyverse")`, yo
 
 ### Files Included
 
-There are a number of files here that generate useful products. They are best utilized with the [**RStudio Connect**](https://rstudio.com/products/connect/) service. The files are:
+There are a number of files here that generate useful products. 
 
 - `"health_dashboard.Rmd"`: An R Markdown document that generates a dashboard with business health KPIs (using **flexdashboard**, **DT**, and **ggplot2**)
 - `"business_health.Rmd"`: An R Markdown document that generates a report with recent business health KPIs (using **gt**, **ggplot2**, and **blastula**)
-- `"business_health_email.Rmd"`: An R Markdown subdocument that provides the **blastula** email message body, this email is only to be delivered by **RStudio Connect** when a certain condition holds (badly-performing KPIs)
+- `"business_health_email.Rmd"`: An R Markdown subdocument that provides the **blastula** email message body, this email is only to be delivered when a certain condition holds (badly-performing KPIs)
 - `"health_kpis.csv"`: A CSV file that contains daily KPI data for all of the examples
 - `"health_kpis.R"`: An R script that contains a function for obtaining KPI data over the last *n* days (this file is *sourced* by `"health_dashboard.Rmd"` and by `"business_health.Rmd"`)
 - `"health_thresholds"`: An R script that contains utility functions for the main R Markdown report (`"business_health.Rmd"`)
 - `"beyond-dashboard-fatique.Rproj"`: A **RStudio** project file. This is helpful for opening this entire project in the **RStudio** IDE.
+
+### Automation
+
+In order for these dynamic reports to check for alerts and send proactive notifications, they need to be automated. One simple option would be to use a service like cron. In the webinar, we take advantage of [RStudio Connect](https://rstudio.com/products/connect), a professional product from RStudio that makes it easy to put these notifiers into production without worrying about package versions, logging, authentication, or scale.
+
+For more information:  
+ - Try [RStudio Connect Evaluation](https://rstudio.con/products/connect)
+ - Read the [RStudio Connect User Guide](https://docs.rstudio.com/connect/user/rmarkdown/#r-markdown-email-customization)
+ - Check out more [blastula email demos](https://solutions.rstudio.com/examples/blastula-overview/)
+ 
+
