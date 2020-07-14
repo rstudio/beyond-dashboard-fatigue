@@ -26,7 +26,7 @@ The complete set of packages used in this webinar presentation (and required for
 - **flexdashboard**: 'R Markdown Format for Flexible Dashboards'
 - **DT**: 'A Wrapper of the JavaScript Library "DataTables"'
 
-By installing the **tidyverse** package with `install.packages("tidyverse")`, you'll get most of these packages. Use `install.packages()` with **"blastula"**, **"gt"**, **"gt"**, **"flexdashboard"**, and **"DT"** to obtain the complete set.
+By installing the **tidyverse** package with `install.packages("tidyverse")`, you'll get most of these packages. Use `install.packages()` with **"blastula"**, **"gt"**, **"glue"**, **"flexdashboard"**, and **"DT"** to obtain the complete set.
 
 ### Files Included
 
