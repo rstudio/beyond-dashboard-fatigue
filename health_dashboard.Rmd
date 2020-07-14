@@ -42,7 +42,8 @@ health_kpis %>%
     names_to = "type",
     values_to = "n"
   ) %>%
-  mutate(type = type %>% fct_relevel(c("dau", "dac", "new_users", "churn_users"))) %>%
+  mutate(type = type %>% 
+           fct_relevel(c("dau", "dac", "new_users", "churn_users"))) %>%
   ggplot() +
   geom_line(aes(x = date, y = n, color = type)) +
   scale_y_log10(
